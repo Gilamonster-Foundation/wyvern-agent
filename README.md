@@ -27,10 +27,20 @@ adopted, tested, and replaced independently.
 - **Leashes** workers through [`agent-bridle`](https://github.com/Gilamonster-Foundation/agent-bridle)
   — capabilities enforced as `Caveats`, not ambient authority.
 
-## Load-bearing principles (carried forward from drake)
+## Load-bearing principles
 
+- **Capabilities, not vendor identities.** A pilot is selected by what
+  `Caveats` it can satisfy and what its scorecard says, never by what API
+  provider it talks to. There are no vendor adapters in any wyvern crate.
+  A clean test: `grep -ri "claude\|openai\|anthropic" wyvern-*/src/` must
+  return zero matches in non-test code. *(This is the biggest delta from
+  drake and the principle a vendor-API regression would silently violate;
+  it leads the list deliberately.)*
 - **Prefer decomposition into reusable crates.** Each lesson is a crate, not a
-  module of a monolith.
+  module of a monolith. Drake was already decomposed into 20 crates — the
+  rewrite recuts the boundaries (separating phase orchestration, aggregation,
+  bare-repo storage, transport, and dispatch policy) rather than just
+  splitting a monolith.
 - **Patch, not prose.** A worker only edits files; orchestration plumbing is the
   desk's job, and the arbiter grades the *diff*.
 - **An empty diff is a crash, not a candidate.** Scrubbed pre-arbiter, counted

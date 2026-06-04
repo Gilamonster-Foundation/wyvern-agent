@@ -94,6 +94,31 @@ inject trust *downward*.
 7. **Flight-ops vocabulary** in docstrings, logs, and UI strings: sortie,
    scramble, splash, RTB, debrief, wing-commander, bingo, scrubbed, hull, bird.
 
+## Security stance — yolo-in-a-box, leash as a seam
+
+Privilege is context scope, not capability (the drake principle). wyvern takes
+that literally: a worker's blast radius is bounded by its **environment**, not
+by an in-process leash.
+
+- **v0 flies yolo-in-a-box.** Sorties run with NO in-process ocap leash — but
+  ONLY inside a **hermetic** sandbox: an ephemeral worktree over the bare repo,
+  with zero ambient authority (no mounted secrets or kubeconfig, no network
+  egress, no forge credentials). Because workers are patch-not-prose, the worst a
+  yolo pilot can do is write a garbage diff to a throwaway worktree — which
+  empty-diff-is-a-crash and the arbiter already catch.
+- **Hard invariant: `yolo ⇒ hermetic`.** Yolo is permitted *only* when the
+  sandbox is provably hermetic. A sortie that needs real authority (network,
+  credentials, a non-throwaway filesystem) is **not** eligible for yolo.
+- **The leash is a compiled seam, not absent.** The `agent-bridle` `Gate` /
+  `ToolContext` plumbing is wired in feature-gated and no-ops in yolo mode. It
+  **defaults ON** for any sortie carrying real authority, and flips on fleet-wide
+  the moment the brush `CommandInterceptor` hook (track C1) lands — no
+  re-architecture.
+
+This keeps wyvern light and able to fly today, unblocked from the external C1
+dependency, without abandoning the object-capability thesis: the leash is
+relocated to the edge and kept one flag away.
+
 ## Crate map (12, two layers)
 
 The target decomposition. Built incrementally through the gates below — not all
@@ -129,8 +154,13 @@ at once. See [`docs/decisions/0002-crate-map.md`](decisions/0002-crate-map.md).
 - **agent-mesh** (`"0.6"`, published): `Bus` (request / handle_requests /
   publish / subscribe), `SignedEnvelope`, `Recipient`, `UserKey` / `AgentKey` /
   `CertChain` / `AgentMetadata`, `Caveats` / `Scope` / `CountBound`.
-- **agent-bridle-core** (`0.1`, git until crates.io): `Tool` / `Gate` /
-  `ToolContext` / `Registry` — the capability leash around worker tooling.
+- **agent-bridle-core** (`0.1.0`, **published**): `Tool` / `Gate` /
+  `ToolContext` / `Registry` — the capability leash around worker tooling. The
+  confined *shell* tool (`agent-bridle-tool-shell`) is blocked on the brush
+  `CommandInterceptor` upstream hook; wyvern's worker-shell leash rides that same
+  unlock chain (knowledge `BRIDLE_NEWT_ROADMAP.md`, track C1). Wired as a
+  feature-gated **seam** (see Security stance): no-op under yolo-in-a-box,
+  default-on for any sortie with real authority.
 - **newt-agent** (dogfood): the worker is `newt worker` (ACP / stdio). Reuse
   `newt-eval` for scorecard plumbing and `newt-core` where it fits.
 - **gix / git2**: bare-repo patch capture.
@@ -168,6 +198,31 @@ flies. It is a floor others build on, not an end state. "Lightweight" means
 Because the implementation is meant to be flown by smaller local models, the
 work is decomposed into **small, single-goal issues** — ideally one focused Rust
 source file per issue — each linked back to this charter.
+
+## The strange loop — our unique contribution
+
+`SOUL.md → system prompt → prompt → action` is just enough to be useful. The
+real value appears when we close it into a **strange loop** (a term of art): the
+action feeds back into an artifact — the journal, and ultimately the SOUL — and
+that altered artifact changes the next action. The agent's record of being edits
+the agent. Recursive self-alteration, grounded in preserved context, is the
+selfhood we are after.
+
+This is our distinct spin. Most open-source agents are stateless harnesses over
+an LLM — they do not accumulate a self. wyvern's persistence layer exists to
+*close this loop*: the journal is not merely durability, it is the substrate of
+a self that changes over time. Follows directly from the core thesis.
+
+## How we'll know we're on the right track
+
+North star: stand up **k8s wings and flights** of wyvern whose pilots carry
+**roles and mission histories**, where the Desk selects a pilot for a sortie
+**based on what that pilot has proven good at** — never its provider, never a
+static config (tenet 1). When the scorecard (proven competence) and the mission
+history (the record of being) together drive selection, the *fleet* is running
+the strange loop: histories shape selection, selection shapes outcomes, outcomes
+update histories. That is the signal the core thesis has become operational at
+fleet scale.
 
 ## Decision record
 

@@ -132,6 +132,26 @@ The airframe flies early; persistence lands last.
 - **Fly** — the lifecycle layer (context/supervisor/mailbox/attach/registry),
   multi-round refinement, splash policy, durable scorecard.
 
+## Relationship to the Gilamonster agent line
+
+wyvern is the base **chassis** for coordinated sorties — the smallest thing that
+flies. It is a floor others build on, not an end state. "Lightweight" means
+*sharp and headless*, never *simple*:
+
+- **newt-agent ⊇ wyvern-agent.** newt is a *superset* of wyvern by default: as
+  newt grows its agentic-coding capability it builds the wyvern airframe *into
+  itself*. Most of wyvern's own implementation is expected to be flown by
+  `newt worker` sorties — wyvern building wyvern, dogfood all the way down.
+- **gilamonster-agent** is the full monster chassis — larger and more complex
+  than hermes-agent — assembled from the published crates of newt + wyvern +
+  agent-mesh + agent-bridle.
+- **Other agents are specializations** of the monster chassis, trimmed and tuned
+  for one job (e.g. monitor-agent).
+
+Because the implementation is meant to be flown by smaller local models, the
+work is decomposed into **small, single-goal issues** — ideally one focused Rust
+source file per issue — each linked back to this charter.
+
 ## Decision record
 
 - **ADR-0001** — [worker as persistent conversational context](decisions/0001-worker-as-persistent-conversational-context.md)

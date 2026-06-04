@@ -4,6 +4,20 @@
 
 **Status:** Charter ratified 2026-06-04
 
+## Core thesis — identity is preserved context (non-negotiable)
+
+Won through this work since October 2025: **an identity is a context and a
+record of decisions and perceptions.** That record of *being* is what makes an
+agent more than a bare LLM or a bare harness — it is continuity, and the
+continuity is itself the value.
+
+Therefore **preservation of context is not negotiable.** It is a load-bearing
+component of the design, not a feature added later. wyvern's persistence layer
+(ADR-0001) exists *because* of this thesis: a context's journal **is** the
+worker. The Fly gate is a build-order decision about *when* durability lands —
+never a statement that context is lower priority. A sortie that cannot preserve
+its record of being is not done.
+
 ## Why wyvern exists
 
 `drake` proved out an agentic swarm: a desk dispatches sorties to worker models,
@@ -72,8 +86,11 @@ inject trust *downward*.
 5. **No wall-clock in decisions.** Use `Caveats.valid_for_generation:
    Scope<u64>` as the causal primitive. No `Instant::now()` in dispatch-decision
    or public-API paths. Time is observed, never compared.
-6. **Workers are persistent actors.** Context is the substrate; a context's
-   journal *is* the worker. (See ADR-0001; delivered at the Fly gate.)
+6. **Workers are persistent actors; context preservation is non-negotiable.**
+   Per the core thesis, a context's journal *is* the worker — its identity is
+   its record of decisions and perceptions. Preserving that continuity is
+   load-bearing, not optional. (See ADR-0001; durability lands at the Fly gate,
+   but is never treated as lower priority.)
 7. **Flight-ops vocabulary** in docstrings, logs, and UI strings: sortie,
    scramble, splash, RTB, debrief, wing-commander, bingo, scrubbed, hull, bird.
 

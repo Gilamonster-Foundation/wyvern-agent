@@ -1,0 +1,28 @@
+[package]
+name = "wyvern-agent"
+description = "The headless wyvern orchestration daemon and reference dragon-rider: drives a Flight end-to-end against a dispatcher and a grader — scramble sorties, collect debriefs, advance/retry/abort, write the calibration log. No UI, no model awareness."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "wyvern-agent"
+path = "src/main.rs"
+
+[lib]
+name = "wyvern_agent"
+path = "src/lib.rs"
+
+[dependencies]
+wyvern-wire.workspace = true
+wyvern-flight.workspace = true
+wyvern-dispatch.workspace = true
+wyvern-hangar.workspace = true
+async-trait.workspace = true
+tokio.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true

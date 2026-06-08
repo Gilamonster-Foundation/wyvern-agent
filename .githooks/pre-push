@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# wyvern-agent pre-push hook.
+#
+# PIPELINE PARITY: this hook mirrors `just check` (fmt-check + clippy
+# -D warnings + test + no-vendor guard). When a CI/CD pipeline is added
+# under .github/workflows/, verify this hook still matches its lint /
+# format / test steps (see CLAUDE.md "Push Hook Governance").
+set -euo pipefail
+
+echo "[pre-push] wyvern-agent: running just check (CI parity gate)"
+
+if command -v just >/dev/null 2>&1; then
+    just check
+else
+    echo "[pre-push] 'just' not found; running equivalent cargo steps"
+    cargo fmt --all -- --check
+    cargo clippy --workspace --all-targets -- -D warnings
+    cargo test --workspace
+    cargo test -p wyvern-wire --test no_vendor
+fi
+
+echo "[pre-push] OK"

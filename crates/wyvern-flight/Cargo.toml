@@ -1,0 +1,12 @@
+[package]
+name = "wyvern-flight"
+description = "Deterministic phase state machine for the wyvern swarm: ordered phases of sorties, a phase walker that advances/retries/aborts on outcome, resumable FlightState, and an append-only CalibrationLog. No IO, no clocks, no async."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+wyvern-wire.workspace = true

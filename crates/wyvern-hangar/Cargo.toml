@@ -1,0 +1,12 @@
+[package]
+name = "wyvern-hangar"
+description = "CandidateStore seam for the wyvern swarm: stores candidate patches keyed by sortie. Swarm-internal storage is a bare git repo (not a forge); the scaffold ships an in-memory stub, real git deferred."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+wyvern-wire.workspace = true

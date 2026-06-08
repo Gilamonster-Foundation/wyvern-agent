@@ -1,0 +1,29 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/wyvern-wire",
+    "crates/wyvern-flight",
+    "crates/wyvern-dispatch",
+    "crates/wyvern-hangar",
+    "crates/wyvern-agent",
+]
+
+[workspace.package]
+version = "0.6.20260608"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+authors = ["The Wyvern Authors"]
+repository = "https://github.com/Gilamonster-Foundation/wyvern-agent"
+rust-version = "1.75"
+
+[workspace.dependencies]
+wyvern-wire = { path = "crates/wyvern-wire", version = "0.6.20260608" }
+wyvern-flight = { path = "crates/wyvern-flight", version = "0.6.20260608" }
+wyvern-dispatch = { path = "crates/wyvern-dispatch", version = "0.6.20260608" }
+wyvern-hangar = { path = "crates/wyvern-hangar", version = "0.6.20260608" }
+async-trait = "0.1"
+blake3 = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+[profile.release]
+strip = true

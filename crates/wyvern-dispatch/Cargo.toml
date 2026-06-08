@@ -1,0 +1,16 @@
+[package]
+name = "wyvern-dispatch"
+description = "The SortieDispatcher seam for the wyvern swarm: an async trait that sends a SortieRequest to a worker and collects a SortieDebrief, with a deterministic stub. The real transport rides agent-mesh and leashes workers with agent-bridle Caveats."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+wyvern-wire.workspace = true
+async-trait.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true

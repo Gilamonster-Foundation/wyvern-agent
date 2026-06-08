@@ -1,0 +1,12 @@
+[package]
+name = "wyvern-wire"
+description = "Canonical swarm payload types for the wyvern orchestration engine: sortie requests, debriefs (patch-not-prose), and verdicts. Carried inside agent-mesh SignedEnvelopes."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+blake3.workspace = true

@@ -1,0 +1,21 @@
+name: CI
+on:
+  push: { branches: [main] }
+  pull_request: { branches: [main] }
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: { components: clippy, rustfmt }
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test --workspace
+      - name: no vendor identities (capabilities, not vendors)
+        run: |
+          if grep -rniE 'claude|openai|anthropic' wyvern-runtime/src wyvern/src \
+               | grep -viE '#\[cfg\(test\)\]|mod tests|// '; then
+            echo "vendor identity leaked into non-test code"; exit 1
+          fi
+      - run: python3 scripts/eval/bench_scoreboard.py --self-test

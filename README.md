@@ -52,6 +52,45 @@ adopted, tested, and replaced independently.
 - **Flight-ops vocabulary** (sortie / scramble / splash / RTB / debrief) for new
   surfaces, docstrings, and UI strings.
 
+## The flight tier — the worker (v0.1)
+
+The first thing to land is the **worker itself**: the lightest thing that can fly
+a coding sortie. It is the stripped essence of an agentic loop — a
+chat-completions client, four tools (`run_command` / `read_file` / `write_file` /
+`edit_file`), one flat loop, a trace. No TUI, no config search, no async runtime.
+
+- **`wyvern-runtime`** — the reusable core (`drive()` + the tools + the wire).
+- **`wyvern`** — a thin headless binary.
+
+```bash
+cargo build --release          # → target/release/wyvern  (~1.8 MB, opt-level=z, LTO, stripped)
+wyvern --endpoint http://host:8080 --model M \
+       --instruction-file task.md --cwd /app \
+       --events run.jsonl --max-rounds 40 --context-window 65536
+```
+
+The system prompt bakes in the lessons: **patch, not prose**, and **run the
+task's tests before RTB** (declaring done unverified is a failure). No vendor
+identity enters any `wyvern-*` crate —
+`grep -ri "claude\|openai\|anthropic" wyvern-*/src` returns zero in non-test code.
+
+## Terminal-Bench scoreboard
+
+Same rule as [`newt-agent`](https://github.com/Gilamonster-Foundation/newt-agent):
+wyvern is measured on [Terminal-Bench](https://github.com/harbor-framework/terminal-bench)
+(`scripts/eval/harbor/wyvern_agent.py`), and the release gate is a **per-model
+monotonic ratchet** — a model's score never goes down. Published every release
+from `scripts/eval/bench-results.jsonl` via `scripts/eval/bench_scoreboard.py render`.
+
+<!-- BENCH-SCOREBOARD:START -->
+_Per-model **champion** scores — the release gate is a monotonic ratchet: a model's score never goes down. Auto-generated; do not edit by hand._
+
+| Model | Family | Score | Passed | Suite | Window | Version | Date |
+|-------|--------|-------|--------|-------|--------|---------|------|
+| _(no runs recorded yet)_ | | | | | | | |
+
+<!-- BENCH-SCOREBOARD:END -->
+
 ## Source lineage
 
 The drake-era design docs that feed this rewrite are catalogued in

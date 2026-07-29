@@ -1,0 +1,12 @@
+[package]
+name = "wyvern-runtime"
+description = "The stripped essence of an agentic loop — the flight tier's reusable core."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+ureq = { workspace = true }

@@ -1,0 +1,15 @@
+[package]
+name = "wyvern"
+description = "wyvern — the lightest headless worker agent (flight tier)."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "wyvern"
+path = "src/main.rs"
+
+[dependencies]
+wyvern-runtime = { path = "../wyvern-runtime" }
+serde_json = { workspace = true }

@@ -1,5 +1,9 @@
 # wyvern-dispatch
 
+> **Legacy / non-release-path:** the stub dispatch seam below is not the
+> authenticated resident transport or execution lifecycle. See the
+> [R0 inventory](../../docs/RELEASE_INVENTORY.md).
+
 The **dispatch seam**: how the Dragon-Rider scrambles a sortie to a
 worker and collects its debrief.
 

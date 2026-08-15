@@ -1,5 +1,9 @@
 # wyvern-flight
 
+> **Legacy / non-release-path:** this orchestration state machine is retained
+> but is not part of the resident release. See the
+> [R0 inventory](../../docs/RELEASE_INVENTORY.md).
+
 The deterministic **phase state machine** — the heart of the old
 `drake-foreman`, restated as a pure, testable algebra.
 

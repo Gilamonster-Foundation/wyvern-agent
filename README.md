@@ -1,64 +1,101 @@
 # wyvern-agent
 
-> A minimalist, **headless** airframe for agent-to-agent coordinated **sorties** —
-> the drake-swarm lessons, decomposed into small reusable crates on an open
-> substrate.
+> A lightweight resident agent that lives on a workstation, server, VM, or
+> Kubernetes node/pod; receives delegated work; executes through Agent Bridle;
+> streams lifecycle events to an operator; and retains enough agent and
+> workspace state to do useful autonomous work.
 
-**Status:** chartered (2026-06-04) — see [`docs/CHARTER.md`](docs/CHARTER.md)
+**Status:** R0 architecture correction ([release tracker #51]). This repository
+does not yet contain a releasable resident runtime. The current binary is a
+legacy, stub-backed flight demo and is not evidence of task dispatch, Bridle
+execution, or streaming. See the
+[release inventory and merge train](docs/RELEASE_INVENTORY.md).
 
-## What this is
+## Product boundary
 
-`drake` proved out an agentic swarm: a desk dispatches sorties to worker models,
-captures their patches, and a wing-commander arbiter grades the work. Those
-lessons are real, but they live in a private monolith (`drake-foreman`) that is
-too entrenched to evolve cleanly. Sibling agent `newt-agent` is thriving but
-carries a rich TUI; wyvern is the *separate, deliberately light* agent for one
-job — coordinated sorties.
+Wyvern is the small, headless resident in the Newt agent line. Newt remains the
+full operator-facing runtime; Wyvern is the remote execution endpoint that can
+stay alive near a workspace and accept narrowly delegated work.
 
-**wyvern-agent** is the rewrite: the same flight-ops lessons, restated in the
-open.
+Wyvern is not a second Newt implementation, a TUI or web UI, an orchestrator or
+control plane, an OpenShell replacement, or an Agent Bridle replacement. It
+does not pursue Newt feature parity. Shared runtime behavior belongs in a small
+Newt-owned crate rather than being copied here.
 
-## What "lightweight" means here
+Four concerns stay independent:
 
-Many small crates *and* a full persistent-actor lifecycle is not a contradiction
-with lightweight — it is what lightweight means here:
+| Concern | Initial release choice | Other choices |
+|---|---|---|
+| Agent runtime | Wyvern resident | Newt operator runtime |
+| Shell semantics | safe-subset | Brush, host shell, future engines |
+| Execution backend | Bridle local | Bridle `RemoteFence`; OpenShell may implement one |
+| Transport / dispatch | Agent Mesh | local test transport; future transports |
 
-- **Light ≠ few crates.** Each crate is small, sharp, single-purpose, and
-  independently useful; a consumer depends only on what it needs.
-- **Headless.** No TUI, ever — a ratatui dependency is exactly the weight wyvern
-  refuses. Wyvern is a CLI + libraries; rich dashboards belong to `newt pilot`.
-- **Reuse, don't rebuild.** Stand on `agent-mesh-bus`, `agent-bridle-core`, and
-  dogfooded `newt worker` processes; wyvern writes orchestration glue only.
-- **No vendor code.** Pilots are chosen by capability + scorecard, never by
-  provider; `grep` for provider names in non-test source returns zero.
+Brush and OpenShell are not alternatives on one enum. Brush determines shell
+semantics. OpenShell is an optional remote execution/enforcement backend.
+Wyvern remains useful without OpenShell.
 
-## Positioning in the Gilamonster constellation
+## First release proof
 
-- **Supersedes** the private `drake` swarm (no vendor pilots; the
-  `drake-arbiter` vendor slots are obsolete).
-- **Dispatches** local-model [`newt-agent`](https://github.com/Gilamonster-Foundation/newt-agent)
-  instances as workers — dogfood, no third-party pilots.
-- **Rides** [`agent-mesh`](https://github.com/Gilamonster-Foundation/agent-mesh)
-  for coordination/airspace (cryptographic, broker-less).
-- **Leashes** workers through [`agent-bridle`](https://github.com/Gilamonster-Foundation/agent-bridle)
-  — capabilities enforced as `Caveats`, not ambient authority.
+The first supported path is deliberately narrow:
 
-## Build gates
+```text
+Newt/operator
+    -> authenticated remote task over Agent Mesh
+    -> long-lived Wyvern resident
+    -> Agent Bridle execution (local backend, safe-subset semantics)
+    -> ordered live lifecycle events
+    -> operator
+```
 
-The airframe flies early; persistence lands last.
+The proof must run a real process that prints `line 1`, waits long enough to
+show temporal separation, prints `line 2`, and exits. The operator must observe
+`line 1` before process completion. Replaying a completed response, polling a
+one-shot Mesh request/reply endpoint, or returning the right final text does
+not count as streaming.
 
-- **Crawl** — charter + crate-map ADR + workspace scaffold; `cargo check` green.
-- **Walk** — one `TaskRequest` over agent-mesh → one `newt worker` → one
-  `TaskReply` → a single voter grades the patch.
-- **Run** — three pilots compete; quorum reaches consensus; scorecard records it.
-- **Fly** — the persistent-actor lifecycle (context/supervisor/mailbox/attach/
-  registry), multi-round refinement, splash policy.
+## Security floor
 
-## Documentation
+Every execution goes through Agent Bridle. There is no yolo mode, hermetic or
+otherwise, that bypasses the Bridle authority model for a release path.
+Unsupported authority or evidence fails closed; remote execution never inherits
+trust merely from local kernel identity; and OpenShell is never an independent
+source of authority.
 
-- [`docs/CHARTER.md`](docs/CHARTER.md) — mission, roles, the seven tenets, the
-  12-crate map, the reuse contract, and the build gates.
-- [`docs/decisions/`](docs/decisions/) — ADRs (ADR-0001 persistent context,
-  ADR-0002 crate map).
-- [`docs/MIGRATION_BACKLOG.md`](docs/MIGRATION_BACKLOG.md) — drake-era design
-  docs feeding the rewrite (revise-don't-copy; go-public scrub before public).
+The target attribution chain is explicit:
+
+```text
+request identity
+  -> delegated authority
+  -> stable Wyvern resident identity
+  -> per-process Mesh identity
+  -> execution backend
+  -> execution/result evidence
+```
+
+Agent Mesh process `AgentKey`s remain ephemeral. A stable resident identifier
+and its signed metadata binding are shared-runtime gaps, not a reason to persist
+an ephemeral key or relabel the operator's `UserKey` as the resident.
+
+## Repository state
+
+`wyvern-wire`, `wyvern-flight`, `wyvern-dispatch`, `wyvern-hangar`, and the
+current `DragonRider` library are retained as legacy experimentation so this
+correction does not become a rewrite. They are outside the resident release
+path. In particular, `SortieRequest` / `SortieDebrief` are not the remote task
+or execution protocol, and `StubDispatcher` / `InMemoryHangar` are not release
+backends.
+
+## Build gate
+
+```bash
+just check
+```
+
+This runs formatting, zero-warning clippy, the workspace tests, and the
+vendor-identity source guard. CI and the pre-push hook mirror the same gate.
+
+The full clean-environment and real-process release gates are listed in
+[`docs/RELEASE_INVENTORY.md`](docs/RELEASE_INVENTORY.md).
+
+[release tracker #51]: https://github.com/Gilamonster-Foundation/wyvern-agent/issues/51

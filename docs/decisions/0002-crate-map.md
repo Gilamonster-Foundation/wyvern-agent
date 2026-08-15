@@ -1,6 +1,8 @@
 # ADR-0002 — Crate map
 
-> **Status:** Accepted (2026-06-04)
+> **Status:** Superseded at R0 (2026-08-15). The 12-crate orchestration target
+> below is not the resident release path; see
+> [`../RELEASE_INVENTORY.md`](../RELEASE_INVENTORY.md).
 > **Context:** [`../CHARTER.md`](../CHARTER.md)
 
 ## Decision

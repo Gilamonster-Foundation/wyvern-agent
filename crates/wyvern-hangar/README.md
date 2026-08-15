@@ -1,5 +1,9 @@
 # wyvern-hangar
 
+> **Legacy / non-release-path:** this candidate store belongs to the retired
+> orchestration experiment, not resident state. See the
+> [R0 inventory](../../docs/RELEASE_INVENTORY.md).
+
 The **hangar**: where candidate patches are parked.
 
 - `CandidateStore` (trait) — `park(SortieDebrief)` / `candidate(&SortieId)`.

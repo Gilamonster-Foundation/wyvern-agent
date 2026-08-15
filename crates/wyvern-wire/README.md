@@ -1,5 +1,9 @@
 # wyvern-wire
 
+> **Legacy / non-release-path:** these sortie payloads are retained for
+> compatibility experiments. They are not Wyvern's remote task, execution, or
+> event protocol. See the [R0 inventory](../../docs/RELEASE_INVENTORY.md).
+
 Canonical swarm **payload** types for the wyvern orchestration engine.
 
 These are the real versions of the placeholder types that

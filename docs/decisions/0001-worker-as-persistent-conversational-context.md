@@ -1,6 +1,9 @@
 # A Worker Is a Persistent Conversational Context
 
-> **Status:** Proposed
+> **Status:** Historical input; not the resident release plan. The persistence
+> lesson may inform a future shared Newt runtime boundary, but the Wyvern-local
+> crate decomposition and swarm/orchestrator framing below were superseded by
+> [`../CHARTER.md`](../CHARTER.md) at R0 on 2026-08-15.
 > **Date:** 2026-06-03
 > **Repo:** `Gilamonster-Foundation/wyvern-agent`
 > **Lineage:** Revised, clean-room, from the drake-era swarm worker design.

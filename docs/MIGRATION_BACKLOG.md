@@ -1,5 +1,9 @@
 # Migration backlog — drake/gilabot design docs → wyvern-agent
 
+> **Historical:** this swarm-orchestration migration is not part of the
+> resident release train. It remains as lineage only; see
+> [`CHARTER.md`](CHARTER.md) and [`RELEASE_INVENTORY.md`](RELEASE_INVENTORY.md).
+
 These design docs currently live in the **private** `hartsock/gilabot` repo
 (`docs/design/`). They are the source lineage for wyvern's clean-room rewrite.
 

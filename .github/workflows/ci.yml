@@ -1,0 +1,35 @@
+name: CI
+
+# PIPELINE PARITY: this workflow mirrors `just check` and
+# `.githooks/pre-push`. Audit all three when changing a gate.
+
+on:
+  push:
+    branches: ["main", "release/**", "feat/**", "fix/**"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: Format
+        run: cargo fmt --all -- --check
+      - name: Clippy
+        run: cargo clippy --locked --workspace --all-targets -- -D warnings
+      - name: Tests
+        run: cargo test --locked --workspace
+      - name: Vendor-identity guard
+        run: cargo test --locked -p wyvern-wire --test no_vendor

@@ -3,6 +3,25 @@
 > **Status:** Accepted (2026-06-04)
 > **Context:** [`../CHARTER.md`](../CHARTER.md)
 
+> **PARTIALLY SUPERSEDED 2026-08-17.** The roles this map encodes are inverted
+> by `newt-agent:docs/decisions/agent_line_architecture.md` (newt-agent PR
+> #1753) and the charter's Supersession notice. Specifically:
+>
+> - `wyvern-hangar` "launch + supervise `newt worker` processes" and
+>   `wyvern-scramble` "the Desk's dispatch engine" describe wyvern dispatching
+>   newt. wyvern is now the dispatched worker.
+> - The reuse contract's `newt worker` (dogfood) entry is superseded: **no
+>   wyvern crate may depend on newt or gilamonster.** A lower layer never
+>   depends on a richer one.
+> - The Consequence "the Crawl scaffold creates all 12 members as stubs" is not
+>   true today. Five crates ship; three of them (`wire`, `flight`, `hangar`)
+>   are in this map, while `wyvern-dispatch` and `wyvern-agent` are not.
+>
+> The crate decomposition itself is not superseded, and neither is
+> "No TUI dependency anywhere in the workspace (no ratatui/crossterm)" — that
+> line is the reason the newt LeanTUI migration is currently blocked.
+
+
 ## Decision
 
 wyvern-agent is a Cargo workspace of **12 small crates** in two layers, built

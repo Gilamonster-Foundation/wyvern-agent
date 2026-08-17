@@ -62,6 +62,11 @@ an open substrate.
 
 ## Roles (privilege = context scope, never capability)
 
+> **SUPERSEDED 2026-08-17.** The dispatcher/worker assignment below is
+> inverted: wyvern is the dispatched worker, and newt or gilamonster dispatch
+> to it. See the Supersession notice. The *principle* (privilege = context
+> scope, never capability) is unchanged.
+
 | Role | Flight-ops term | Scope | Limit |
 |------|-----------------|-------|-------|
 | Dispatcher | **The Desk** | current flight + rung state | no final authority |
@@ -164,8 +169,11 @@ at once. See [`docs/decisions/0002-crate-map.md`](decisions/0002-crate-map.md).
   unlock chain (knowledge `BRIDLE_NEWT_ROADMAP.md`, track C1). Wired as a
   feature-gated **seam** (see Security stance): no-op under yolo-in-a-box,
   default-on for any sortie with real authority.
-- **newt-agent** (dogfood): the worker is `newt worker` (ACP / stdio). Reuse
-  `newt-eval` for scorecard plumbing and `newt-core` where it fits.
+- ~~**newt-agent** (dogfood): the worker is `newt worker` (ACP / stdio). Reuse
+  `newt-eval` for scorecard plumbing and `newt-core` where it fits.~~
+  **SUPERSEDED 2026-08-17.** wyvern must not depend on newt or gilamonster; a
+  lower layer never depends on a richer one. The rest of this reuse contract
+  (agent-mesh, agent-bridle-core, gix/git2) stands.
 - **gix / git2**: bare-repo patch capture.
 
 ## Build gates (definition of done = the Fly gate)
@@ -185,24 +193,31 @@ The airframe flies early; persistence lands last.
 ## Supersession notice (2026-08-17)
 
 Two claims in this charter are superseded by
-[`newt-agent:docs/decisions/agent_line_architecture.md`](https://github.com/Gilamonster-Foundation/newt-agent/blob/main/docs/decisions/agent_line_architecture.md),
-which is now the canonical statement of how the three agents relate. Read that
+`newt-agent:docs/decisions/agent_line_architecture.md`
+(newt-agent PR #1753, open at the time of writing; the path resolves once it
+merges), which is the canonical statement of how the three agents relate. Read that
 document first where the two disagree.
 
 | superseded here | replaced by |
 |---|---|
 | The Roles table below: the Desk (dispatcher) is wyvern and the Pilot (worker) is a `newt worker` process. | The roles invert. wyvern becomes the dispatched worker: a small headless containerized agent, deployed under OpenShell, that newt or gilamonster dispatch OCAP caveats to for headless or scheduled work. |
 | "newt is a superset of wyvern by default: as newt grows it builds the wyvern airframe *into itself*." | The capability ordering `wyvern ≤ newt ≤ gilamonster` stands. The direction of absorption does not: wyvern is rewritten as the smaller base and newt is rebuilt on it. |
+| Reuse contract: the worker is `newt worker`; reuse `newt-eval` and `newt-core`. | Superseded. wyvern takes no dependency on newt or gilamonster. The rest of the reuse contract stands. |
+| Crate map: `wyvern-hangar` launches and supervises `newt worker` processes; `wyvern-scramble` is "the Desk's dispatch engine". | Superseded with the Roles table. Replacements are for a future wyvern ADR to specify. |
+| "we do **not** want to slow newt down; we want a *separate*, deliberately light agent." | Partly superseded. wyvern stays light; it is no longer separate, since newt is rebuilt on it. |
 
 Unchanged and still binding: headless-only, patch-not-prose, no vendor code,
 `yolo ⇒ hermetic`, capabilities over vendor identity, and the reuse contract.
 
 Accurate as of this amendment, and worth stating plainly because the charter
 reads as though it were already true: wyvern currently depends on none of
-agent-mesh, agent-bridle, newt or gilamonster. Five of the twelve mapped crates
-exist, one shipped crate (`wyvern-dispatch`) is not in ADR-0002's map, and the
-`agent-bridle` `Gate` seam described under "Security stance" is not yet wired.
-Those are gaps to close, not facts to cite.
+agent-mesh, agent-bridle, newt or gilamonster. Five crates ship, but only three
+of them (`wire`, `flight`, `hangar`) appear in ADR-0002's twelve-crate map;
+`wyvern-dispatch` and `wyvern-agent` do not, and ADR-0002's claim that the
+scaffold "creates all 12 members as stubs" is not the case. The `agent-bridle`
+`Gate` seam described under "Security stance" is not wired. The reuse contract
+below names `agent-bridle-core 0.1.0` as published, while every real consumer
+in the line is on 0.7.x. Those are gaps to close, not facts to cite.
 
 ## Relationship to the Gilamonster agent line
 
@@ -210,9 +225,10 @@ wyvern is the base **chassis** for coordinated sorties — the smallest thing th
 flies. It is a floor others build on, not an end state. "Lightweight" means
 *sharp and headless*, never *simple*:
 
-- **newt-agent ⊇ wyvern-agent.** newt is a *superset* of wyvern by default: as
-  newt grows its agentic-coding capability it builds the wyvern airframe *into
-  itself*. Most of wyvern's own implementation is expected to be flown by
+- **newt-agent ⊇ wyvern-agent.** The capability ordering stands. ~~as newt grows
+  its agentic-coding capability it builds the wyvern airframe *into itself*~~
+  — **SUPERSEDED 2026-08-17**: the absorption runs the other way. wyvern is
+  rewritten as the smaller base and newt is rebuilt on it. Most of wyvern's own implementation is expected to be flown by
   `newt worker` sorties — wyvern building wyvern, dogfood all the way down.
 - **gilamonster-agent** is the full monster chassis — larger and more complex
   than hermes-agent — assembled from the published crates of newt + wyvern +

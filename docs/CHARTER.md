@@ -2,7 +2,10 @@
 
 > A minimalist, **headless** airframe for agent-to-agent coordinated **sorties**.
 
-**Status:** Charter ratified 2026-06-04
+**Status:** Charter ratified 2026-06-04. **Amended 2026-08-17**: the Roles
+table and the newt absorption direction are superseded by
+`newt-agent:docs/decisions/agent_line_architecture.md`. See "Supersession
+notice" below. Everything else stands.
 
 ## Core thesis — identity is preserved context (non-negotiable)
 
@@ -178,6 +181,28 @@ The airframe flies early; persistence lands last.
   holds all rungs.
 - **Fly** — the lifecycle layer (context/supervisor/mailbox/attach/registry),
   multi-round refinement, splash policy, durable scorecard.
+
+## Supersession notice (2026-08-17)
+
+Two claims in this charter are superseded by
+[`newt-agent:docs/decisions/agent_line_architecture.md`](https://github.com/Gilamonster-Foundation/newt-agent/blob/main/docs/decisions/agent_line_architecture.md),
+which is now the canonical statement of how the three agents relate. Read that
+document first where the two disagree.
+
+| superseded here | replaced by |
+|---|---|
+| The Roles table below: the Desk (dispatcher) is wyvern and the Pilot (worker) is a `newt worker` process. | The roles invert. wyvern becomes the dispatched worker: a small headless containerized agent, deployed under OpenShell, that newt or gilamonster dispatch OCAP caveats to for headless or scheduled work. |
+| "newt is a superset of wyvern by default: as newt grows it builds the wyvern airframe *into itself*." | The capability ordering `wyvern ≤ newt ≤ gilamonster` stands. The direction of absorption does not: wyvern is rewritten as the smaller base and newt is rebuilt on it. |
+
+Unchanged and still binding: headless-only, patch-not-prose, no vendor code,
+`yolo ⇒ hermetic`, capabilities over vendor identity, and the reuse contract.
+
+Accurate as of this amendment, and worth stating plainly because the charter
+reads as though it were already true: wyvern currently depends on none of
+agent-mesh, agent-bridle, newt or gilamonster. Five of the twelve mapped crates
+exist, one shipped crate (`wyvern-dispatch`) is not in ADR-0002's map, and the
+`agent-bridle` `Gate` seam described under "Security stance" is not yet wired.
+Those are gaps to close, not facts to cite.
 
 ## Relationship to the Gilamonster agent line
 

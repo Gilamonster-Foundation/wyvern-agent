@@ -227,7 +227,7 @@ flies. It is a floor others build on, not an end state. "Lightweight" means
 
 - **newt-agent ⊇ wyvern-agent.** The capability ordering stands. ~~as newt grows
   its agentic-coding capability it builds the wyvern airframe *into itself*~~
-  — **SUPERSEDED 2026-08-17**: the absorption runs the other way. wyvern is
+  **SUPERSEDED 2026-08-17**: the absorption runs the other way. wyvern is
   rewritten as the smaller base and newt is rebuilt on it. Most of wyvern's own implementation is expected to be flown by
   `newt worker` sorties — wyvern building wyvern, dogfood all the way down.
 - **gilamonster-agent** is the full monster chassis — larger and more complex

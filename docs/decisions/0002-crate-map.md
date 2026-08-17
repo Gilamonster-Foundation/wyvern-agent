@@ -18,7 +18,7 @@
 >   are in this map, while `wyvern-dispatch` and `wyvern-agent` are not.
 >
 > The crate decomposition itself is not superseded, and neither is
-> "No TUI dependency anywhere in the workspace (no ratatui/crossterm)" — that
+> "No TUI dependency anywhere in the workspace (no ratatui/crossterm)". That
 > line is the reason the newt LeanTUI migration is currently blocked.
 
 
